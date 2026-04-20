@@ -1,0 +1,180 @@
+/* ===== PAGE BACKGROUND ===== */
+.home-container {
+  background: radial-gradient(circle at 70% 20%, #1e293b, #020617 60%);
+  color: white;
+  overflow-x: hidden;
+
+
+   background: 
+    linear-gradient(rgba(2,6,23,0.85), rgba(2,6,23,0.95)),
+   url("../assets/landing.jpg");/* 👈 your image here */
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 110px 80px;
+  min-height: 90vh;
+}
+
+/* ===== LEFT CONTENT ===== */
+.hero-left {
+  max-width: 550px;
+}
+
+.hero-left h1 {
+  font-size: 56px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.2;
+
+  /* subtle glow */
+  text-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
+}
+
+.hero-left p {
+  color: #cbd5f5;
+  margin-bottom: 35px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ===== BUTTONS ===== */
+.hero-buttons {
+  display: flex;
+  gap: 18px;
+}
+
+/* BUTTON BASE */
+.btn {
+  padding: 13px 28px;
+  border-radius: 12px;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+/* PRIMARY BUTTON */
+.primary {
+  background: linear-gradient(135deg, #6c63ff, #7f8cff);
+  color: white;
+  box-shadow: 0 10px 30px rgba(108, 99, 255, 0.6);
+}
+
+.primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(108, 99, 255, 0.8);
+}
+
+/* SECONDARY BUTTON */
+.secondary {
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+}
+
+.secondary:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ===== RIGHT SIDE CARDS ===== */
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  transform: translateY(-20px);
+}
+
+/* CARD STYLE */
+.mock-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 25px 35px;
+  border-radius: 16px;
+
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+
+  transition: all 0.3s ease;
+}
+
+/* HOVER EFFECT */
+.mock-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+}
+
+/* SMALL CARD */
+.mock-card.small {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* ===== FEATURES SECTION ===== */
+.features {
+  padding: 100px 80px;
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 32px;
+  margin-bottom: 50px;
+}
+
+/* GRID */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+/* FEATURE CARD */
+.feature-card {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 30px;
+  border-radius: 16px;
+
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px);
+
+  transition: all 0.3s ease;
+}
+
+/* HOVER MAGIC */
+.feature-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+}
+
+.feature-card h3 {
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  color: #cbd5f5;
+  font-size: 14px;
+}
+
+/* ===== CTA SECTION ===== */
+.cta {
+  text-align: center;
+  padding: 100px 80px;
+}
+
+.cta h2 {
+  font-size: 34px;
+  margin-bottom: 25px;
+}
+
+/* BIG BUTTON */
+.big {
+  padding: 16px 36px;
+  font-size: 16px;
+}

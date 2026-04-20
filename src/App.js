@@ -5,6 +5,8 @@ import axios from 'axios';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import AddExpense from './pages/AddExpense';
+import Navbar from './pages/Navbar';
+import Home from './pages/Home';
 
 import {
   Chart as ChartJS,
@@ -18,9 +20,7 @@ import { Pie } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
-function Home() {
-  return <h2>Home Page</h2>;
-}
+
 
 // ✅ UPDATED DASHBOARD
 function Dashboard() {
@@ -95,7 +95,9 @@ const pieData = {
 function App() {
   return (
     <Router>
+       <Navbar />  
       <Routes>
+        
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

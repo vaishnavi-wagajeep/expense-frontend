@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Bar, Line } from 'react-chartjs-2';
+
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  Legend
-} from 'chart.js';
-import {
+  Legend,
   CategoryScale,
   LinearScale,
   BarElement,
@@ -15,20 +14,18 @@ import {
   PointElement
 } from 'chart.js';
 
-import { Bar, Line } from 'react-chartjs-2';
-
-
 import './Dashboard.css';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
 ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
   CategoryScale,
   LinearScale,
   BarElement,
   LineElement,
   PointElement
 );
-
 
 function Dashboard() {
   const [expenses, setExpenses] = useState([]);
@@ -59,7 +56,7 @@ function Dashboard() {
     0
   );
 
-  // 📊 Group by Category
+  // 📊 Category Data
   const categoryData = {};
   expenses.forEach((exp) => {
     if (!exp.Category) return;
@@ -75,6 +72,49 @@ function Dashboard() {
     datasets: [
       {
         data: Object.values(categoryData),
+      },
+    ],
+  };
+
+  // 📊 Monthly Data
+  const monthlyData = new Array(12).fill(0);
+
+  expenses.forEach((exp) => {
+    const date = new Date(exp.Date);
+    const month = date.getMonth();
+    monthlyData[month] += parseFloat(exp.Amount);
+  });
+
+  const barData = {
+    labels: [
+      "Jan","Feb","Mar","Apr","May","Jun",
+      "Jul","Aug","Sep","Oct","Nov","Dec"
+    ],
+    datasets: [
+      {
+        label: "Monthly Expenses",
+        data: monthlyData,
+      },
+    ],
+  };
+
+  // 📈 Yearly Data
+  const yearlyMap = {};
+
+  expenses.forEach((exp) => {
+    const year = new Date(exp.Date).getFullYear();
+
+    if (!yearlyMap[year]) yearlyMap[year] = 0;
+
+    yearlyMap[year] += parseFloat(exp.Amount);
+  });
+
+  const lineData = {
+    labels: Object.keys(yearlyMap),
+    datasets: [
+      {
+        label: "Yearly Expenses",
+        data: Object.values(yearlyMap),
       },
     ],
   };
@@ -117,7 +157,7 @@ function Dashboard() {
 
       </div>
 
-      {/* CHART */}
+      {/* PIE CHART */}
       <div className="chart-card">
         <h3>Expense Distribution</h3>
 
@@ -126,6 +166,18 @@ function Dashboard() {
         ) : (
           <p>No data available</p>
         )}
+      </div>
+
+      {/* BAR CHART */}
+      <div className="chart-card">
+        <h3>Monthly Expenses</h3>
+        <Bar data={barData} />
+      </div>
+
+      {/* LINE CHART */}
+      <div className="chart-card">
+        <h3>Yearly Trend</h3>
+        <Line data={lineData} />
       </div>
 
       {/* LIST */}
@@ -146,67 +198,10 @@ function Dashboard() {
             </div>
           ))
         )}
-
-        {/* MONTHLY BAR CHART */}
-<div className="chart-card">
-  <h3>Monthly Expenses</h3>
-  <Bar data={barData} />
-</div>
-
-{/* YEARLY LINE CHART */}
-<div className="chart-card">
-  <h3>Yearly Trend</h3>
-  <Line data={lineData} />
-</div>
-
       </div>
 
     </div>
   );
 }
-
-// 📊 Monthly Data
-const monthlyData = new Array(12).fill(0);
-
-expenses.forEach((exp) => {
-  const date = new Date(exp.Date);
-  const month = date.getMonth(); // 0-11
-  monthlyData[month] += parseFloat(exp.Amount);
-});
-
-const barData = {
-  labels: [
-    "Jan","Feb","Mar","Apr","May","Jun",
-    "Jul","Aug","Sep","Oct","Nov","Dec"
-  ],
-  datasets: [
-    {
-      label: "Monthly Expenses",
-      data: monthlyData,
-    },
-  ],
-};
-
-// 📈 Yearly Data
-const yearlyMap = {};
-
-expenses.forEach((exp) => {
-  const year = new Date(exp.Date).getFullYear();
-
-  if (!yearlyMap[year]) yearlyMap[year] = 0;
-
-  yearlyMap[year] += parseFloat(exp.Amount);
-});
-
-const lineData = {
-  labels: Object.keys(yearlyMap),
-  datasets: [
-    {
-      label: "Yearly Expenses",
-      data: Object.values(yearlyMap),
-    },
-  ],
-};
-
 
 export default Dashboard;
