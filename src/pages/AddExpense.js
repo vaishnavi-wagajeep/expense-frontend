@@ -27,10 +27,19 @@ function AddExpense() {
 
     const token = localStorage.getItem('token');
 
+    if (!token) {
+      alert("Please login first");
+      return;
+    }
+
     try {
-      const res = await axios.post(
-        'http://localhost:5000/expenses/add',
-        form,
+      const res = await axios.post('http://localhost:5000/expenses/add',   // ✅ FIXED ROUTE
+        {
+          Category: form.category,          // ✅ FIXED FIELD NAMES
+          Amount: form.amount,
+          Date: form.date,
+          Notes: form.notes
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -38,10 +47,20 @@ function AddExpense() {
         }
       );
 
-      alert(res.data.message);
+      alert(res.data.message || "Expense added successfully!");
+
+      // ✅ Reset form
+      setForm({
+        category: '',
+        amount: '',
+        date: '',
+        notes: ''
+      });
 
     } catch (err) {
-      console.log("FRONTEND ERROR:", err.response?.data || err);
+      console.log("FULL ERROR:", err);
+      console.log("BACKEND ERROR:", err.response?.data);
+
       alert(err?.response?.data?.error || "Error adding expense");
     }
   };
@@ -53,37 +72,52 @@ function AddExpense() {
 
         <form onSubmit={handleSubmit}>
 
+          {/* CATEGORY */}
           <div className="input-group">
-            <input
-              type="text"
+            <select
               name="category"
-              placeholder="Category"
+              value={form.category}
               onChange={handleChange}
-            />
+              className="dropdown"
+            >
+              <option value="">Select Category</option>
+              <option value="Food">🍔 Food</option>
+              <option value="Travel">🚕 Travel</option>
+              <option value="Shopping">🛍 Shopping</option>
+              <option value="Bills">💡 Bills</option>
+              <option value="Rent">🏠 Rent</option>
+              <option value="Entertainment">🎮 Entertainment</option>
+            </select>
           </div>
 
+          {/* AMOUNT */}
           <div className="input-group">
             <input
               type="number"
               name="amount"
               placeholder="Amount"
+              value={form.amount}
               onChange={handleChange}
             />
           </div>
 
+          {/* DATE */}
           <div className="input-group">
             <input
               type="date"
               name="date"
+              value={form.date}
               onChange={handleChange}
             />
           </div>
 
+          {/* NOTES */}
           <div className="input-group">
             <input
               type="text"
               name="notes"
               placeholder="Notes"
+              value={form.notes}
               onChange={handleChange}
             />
           </div>

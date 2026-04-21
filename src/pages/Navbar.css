@@ -1,116 +1,139 @@
-/* ================= NAVBAR ================= */
-
-
-* {
-  box-sizing: border-box;
-}
-.navbar {
-  position: sticky;
-  top: 0;
+/* ===== WRAPPER ===== */
+.navbar-wrapper {
+  position: absolute;
+  top: 20px;
   width: 100%;
-  
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  background: rgba(2, 6, 23, 0.95);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-
   z-index: 1000;
-  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
 }
 
-/* ================= LOGO ================= */
-.logo {
-  font-size: 22px;
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+/* ===== CONTAINER (shared with hero) ===== */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 60px;
+  margin: 0 auto;
 }
 
-/* ================= NAV LINKS ================= */
-.nav-links {
+/* ===== NAVBAR ===== */
+.navbar {
+  width: 100%;
+  padding: 12px 24px;
+
   display: flex;
   align-items: center;
-  gap: 25px;
-}
+  justify-content: space-between;
 
-.nav-links a {
-  text-decoration: none;
-  color: #cbd5f5;
-  font-size: 14px;
+  border-radius: 999px;
+
+  /* Premium gradient */
+  background: linear-gradient(135deg, #6a11cb, #3a0ca3);
+
+  /* Glass effect */
+  backdrop-filter: blur(16px);
+
+  /* Depth */
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+
   position: relative;
-  cursor: pointer;
-  transition: all 0.25s ease;
 }
 
-/* ===== Hover Underline Effect ===== */
-.nav-links a::after {
+/* ===== SUBTLE GLOW ===== */
+.navbar::before {
   content: "";
   position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.2), transparent);
+  opacity: 0.3;
+}
+
+/* ===== LOGO ===== */
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.logo span {
+  color: #ccff00;
+}
+
+/* ===== CENTER LINKS ===== */
+.nav-center {
+  display: flex;
+  gap: 35px;
+}
+
+.nav-center a {
+  text-decoration: none;
+  color: #d1d5db;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Hover effect */
+.nav-center a:hover {
+  color: white;
+}
+
+/* UNDERLINE ANIMATION */
+.nav-center a::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
   width: 0%;
   height: 2px;
-  left: 0;
-  bottom: -4px;
-  background: #6c63ff;
+  background: #ccff00;
   transition: 0.3s;
 }
 
-.nav-links a:hover::after {
+.nav-center a:hover::after {
   width: 100%;
 }
 
-.nav-links a:hover {
-  color: #ffffff;
-  text-shadow: 0 0 8px rgba(108, 99, 255, 0.7);
+/* ===== ACTIONS ===== */
+.nav-actions {
+  display: flex;
+  gap: 12px;
 }
 
-/* ================= BUTTON BASE ================= */
+/* ===== BUTTON BASE ===== */
 .btn {
   padding: 8px 18px;
-  border-radius: 10px;
+  border-radius: 25px;
   font-size: 14px;
   cursor: pointer;
+  text-decoration: none;
   transition: all 0.3s ease;
   border: none;
 }
 
-/* ================= LOGIN BUTTON ================= */
-.login {
-  border: 1px solid rgba(255, 255, 255, 0.3);
+/* ===== NEON BUTTON ===== */
+.btn.neon {
+  background: #ccff00;
+  color: black;
+  font-weight: 600;
+}
+
+.btn.neon:hover {
+  background: #e6ff4d;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 25px rgba(204, 255, 0, 0.8);
+}
+
+/* ===== GHOST BUTTON ===== */
+.btn.ghost {
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
   background: transparent;
-  color: white;
 }
 
-.login:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* ================= SIGNUP BUTTON ================= */
-.signup {
-  background: linear-gradient(135deg, #6c63ff, #7f8cff);
-  color: white;
-  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.4);
-}
-
-.signup:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(108, 99, 255, 0.6);
-}
-
-/* ================= LOGOUT BUTTON ================= */
-.logout {
-  background: linear-gradient(135deg, #ff5f6d, #ff3b3b);
-  color: white;
-}
-
-.logout:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(255, 59, 59, 0.6);
+.btn.ghost:hover {
+  background: rgba(255,255,255,0.08);
 }

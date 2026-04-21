@@ -61,3 +61,18 @@
 
   cursor: pointer;
 }
+
+
+.dropdown {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 14px;
+}
+
+.dropdown option {
+  color: black;
+}
+

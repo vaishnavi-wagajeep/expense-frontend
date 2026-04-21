@@ -1,45 +1,47 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Pie, Bar, Line } from 'react-chartjs-2';
+import './Dashboard.css';
 
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement
+  Legend
 } from 'chart.js';
 
-import './Dashboard.css';
+import { Pie } from 'react-chartjs-2';
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function Dashboard() {
   const [expenses, setExpenses] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
 
+  // ✅ MONTH + YEAR SELECTOR
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  // ✅ BUDGET
+  const [budget, setBudget] = useState(() => {
+    return localStorage.getItem("budget")
+      ? parseFloat(localStorage.getItem("budget"))
+      : 10000;
+  });
+
+  // ✅ FETCH EXPENSES BASED ON MONTH
   useEffect(() => {
     const fetchExpenses = async () => {
       const token = localStorage.getItem('token');
 
       try {
-        const res = await axios.get('http://localhost:5000/expenses', {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const res = await axios.get(
+          `http://localhost:5000/expenses?month=${selectedMonth}&year=${selectedYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
-        });
+        );
 
         setExpenses(res.data);
       } catch (err) {
@@ -48,158 +50,219 @@ function Dashboard() {
     };
 
     fetchExpenses();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
-  // 🔢 Total Expense
+  // ✅ SAVE BUDGET
+  useEffect(() => {
+    localStorage.setItem("budget", budget);
+  }, [budget]);
+
+  // ✅ TOTAL
   const total = expenses.reduce(
-    (sum, exp) => sum + parseFloat(exp.Amount || 0),
+    (sum, exp) => sum + (parseFloat(exp.Amount) || 0),
     0
   );
 
-  // 📊 Category Data
+  // ✅ CATEGORY GROUPING
   const categoryData = {};
   expenses.forEach((exp) => {
-    if (!exp.Category) return;
+    const category = exp.Category;
+    const amount = parseFloat(exp.Amount) || 0;
 
-    if (!categoryData[exp.Category]) {
-      categoryData[exp.Category] = 0;
+    if (!categoryData[category]) {
+      categoryData[category] = 0;
     }
-    categoryData[exp.Category] += parseFloat(exp.Amount);
+
+    categoryData[category] += amount;
   });
 
-  const pieData = {
-    labels: Object.keys(categoryData),
-    datasets: [
-      {
-        data: Object.values(categoryData),
-      },
-    ],
-  };
+  // ✅ BUDGET LOGIC
+  const percentage = budget > 0 ? (total / budget) * 100 : 0;
+  useEffect(() => {
+  if (percentage >= 80) {
+    setShowAlert(true);
+  }
+}, [percentage]);
 
-  // 📊 Monthly Data
-  const monthlyData = new Array(12).fill(0);
-
-  expenses.forEach((exp) => {
-    const date = new Date(exp.Date);
-    const month = date.getMonth();
-    monthlyData[month] += parseFloat(exp.Amount);
-  });
-
-  const barData = {
-    labels: [
-      "Jan","Feb","Mar","Apr","May","Jun",
-      "Jul","Aug","Sep","Oct","Nov","Dec"
-    ],
-    datasets: [
-      {
-        label: "Monthly Expenses",
-        data: monthlyData,
-      },
-    ],
-  };
-
-  // 📈 Yearly Data
-  const yearlyMap = {};
-
-  expenses.forEach((exp) => {
-    const year = new Date(exp.Date).getFullYear();
-
-    if (!yearlyMap[year]) yearlyMap[year] = 0;
-
-    yearlyMap[year] += parseFloat(exp.Amount);
-  });
-
-  const lineData = {
-    labels: Object.keys(yearlyMap),
-    datasets: [
-      {
-        label: "Yearly Expenses",
-        data: Object.values(yearlyMap),
-      },
-    ],
+  const getColor = () => {
+    if (percentage < 50) return "#22c55e";
+    if (percentage < 80) return "#facc15";
+    return "#ef4444";
   };
 
   return (
-    <div className="dashboard-wrapper">
+    <div className="dashboard-layout">
 
-      {/* HEADER */}
-      <div className="dashboard-header">
-        <h2>Dashboard</h2>
+      <aside className="sidebar">
+        <h2 className="logo">💰 ExpenseX</h2>
 
-        <button
-          className="logout-btn"
-          onClick={() => {
-            localStorage.removeItem('token');
-            window.location.href = '/login';
-          }}
-        >
-          Logout
-        </button>
-      </div>
+        <nav>
+          <a href="/dashboard">Dashboard</a>
+          <a href="/add-expense">Add Expense</a>
+        </nav>
+      </aside>
 
-      {/* STATS */}
-      <div className="stats-grid">
+      <main className="dashboard-content">
+        {showAlert && (
+  <div className="alert-popup">
+    <div className="alert-box">
 
-        <div className="stat-card">
-          <h4>Total Expense</h4>
-          <p>₹{total}</p>
+      <h3>
+        {percentage >= 100 ? "🚨 Budget Exceeded!" : "⚠️ Warning"}
+      </h3>
+
+      <p>
+        {percentage >= 100
+          ? "You have crossed your budget limit!"
+          : "You have used more than 80% of your budget."}
+      </p>
+
+      <button onClick={() => setShowAlert(false)}>
+        OK
+      </button>
+
+    </div>
+  </div>
+)}
+
+        {/* HEADER */}
+        <div className="dashboard-header">
+          <h2 className="gradient-text">Dashboard Overview</h2>
+          <p className="subtext">Track your spending insights</p>
+
+          {/* ✅ MONTH SELECTOR */}
+          <div className="month-selector">
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            >
+              {[
+                "Jan","Feb","Mar","Apr","May","Jun",
+                "Jul","Aug","Sep","Oct","Nov","Dec"
+              ].map((m, i) => (
+                <option key={i} value={i}>{m}</option>
+              ))}
+            </select>
+
+            <input
+              type="number"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+            />
+          </div>
         </div>
 
-        <div className="stat-card">
-          <h4>Categories</h4>
-          <p>{Object.keys(categoryData).length}</p>
+        {/* STATS */}
+        <div className="stats-grid">
+          <div className="stat-card glass">
+            <h4>Total Expense</h4>
+            <p>₹{total}</p>
+          </div>
+
+          <div className="stat-card glass">
+            <h4>Total Entries</h4>
+            <p>{expenses.length}</p>
+          </div>
         </div>
 
-        <div className="stat-card">
-          <h4>Total Entries</h4>
-          <p>{expenses.length}</p>
+        {/* BUDGET */}
+        <div className="budget-card">
+          <h3>Monthly Budget</h3>
+
+          <input
+            type="number"
+            value={budget}
+            onChange={(e) => setBudget(Number(e.target.value))}
+            className="budget-input"
+          />
+
+          <p className="budget-used">
+            Used: ₹{total} ({percentage.toFixed(1)}%)
+          </p>
+
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{
+                width: `${Math.min(percentage, 100)}%`,
+                background: getColor()
+              }}
+            ></div>
+          </div>
+
+          {percentage > 100 && (
+            <p className="warning">⚠️ Budget exceeded!</p>
+          )}
         </div>
 
-      </div>
+        {/* GRID */}
+        <div className="dashboard-grid">
 
-      {/* PIE CHART */}
-      <div className="chart-card">
-        <h3>Expense Distribution</h3>
+          {/* PIE CHART */}
+          <div className="chart-card glass">
+            <h3>Expense Distribution</h3>
 
-        {expenses.length > 0 ? (
-          <Pie data={pieData} />
-        ) : (
-          <p>No data available</p>
-        )}
-      </div>
-
-      {/* BAR CHART */}
-      <div className="chart-card">
-        <h3>Monthly Expenses</h3>
-        <Bar data={barData} />
-      </div>
-
-      {/* LINE CHART */}
-      <div className="chart-card">
-        <h3>Yearly Trend</h3>
-        <Line data={lineData} />
-      </div>
-
-      {/* LIST */}
-      <div className="list-card">
-        <h3>Recent Expenses</h3>
-
-        {expenses.length === 0 ? (
-          <p>No expenses found</p>
-        ) : (
-          expenses.map((exp) => (
-            <div key={exp.ExpenseID} className="expense-item">
-              <div>
-                <strong>{exp.Category}</strong>
-                <p>{new Date(exp.Date).toLocaleDateString()}</p>
+            {expenses.length > 0 ? (
+              <div className="chart-wrapper">
+                <Pie
+                  data={{
+                    labels: Object.keys(categoryData),
+                    datasets: [
+                      {
+                        data: Object.values(categoryData),
+                        backgroundColor: [
+                          "#7c3aed",
+                          "#22d3ee",
+                          "#4ade80",
+                          "#facc15",
+                          "#fb7185",
+                          "#6366f1"
+                        ],
+                        borderWidth: 0
+                      }
+                    ]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "60%",
+                    plugins: {
+                      legend: {
+                        position: "bottom",
+                        labels: {
+                          color: "white"
+                        }
+                      }
+                    }
+                  }}
+                />
               </div>
+            ) : (
+              <div className="empty-state">
+                <h4>No Data for Selected Month</h4>
+              </div>
+            )}
+          </div>
 
-              <span>₹{exp.Amount}</span>
-            </div>
-          ))
-        )}
-      </div>
+          {/* RECENT */}
+          <div className="chart-card glass">
+            <h3>Recent Expenses</h3>
 
+            {expenses.length === 0 ? (
+              <div className="empty-state">No expenses found</div>
+            ) : (
+              expenses.slice(0, 5).map((e, i) => (
+                <div key={i} className="expense-row">
+                  <span>{e.Category}</span>
+                  <strong>₹{e.Amount}</strong>
+                </div>
+              ))
+            )}
+          </div>
+
+        </div>
+
+      </main>
     </div>
   );
 }
