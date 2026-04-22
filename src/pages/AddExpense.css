@@ -1,78 +1,128 @@
+/* ===== MAIN WRAPPER ===== */
 .expense-wrapper {
+  display: flex;
   min-height: 100vh;
+  background: #0b1020;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ===== LEFT SIDE (HERO) ===== */
+.expense-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px;
+  background: linear-gradient(135deg, #6a5cff, #8f44fd);
+  color: white;
+}
+
+.expense-left h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.expense-left p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* ===== RIGHT SIDE (FORM) ===== */
+.expense-right {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  background: linear-gradient(
-    to right,
-    #0f172a,
-    #020617
-  );
+  padding: 40px;
 }
 
+/* ===== CARD ===== */
 .expense-card {
-  width: 380px;
-  padding: 35px;
-  border-radius: 20px;
-
-  background: rgba(30, 41, 59, 0.9);
-  backdrop-filter: blur(20px);
-
-  border: 1px solid rgba(255,255,255,0.1);
-
-  box-shadow:
-    0 20px 60px rgba(0,0,0,0.6),
-    0 0 30px rgba(99,102,241,0.2);
-
-  color: white;
+  width: 100%;
+  max-width: 420px;
+  background: #111827;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 
 .expense-card h2 {
   text-align: center;
   margin-bottom: 20px;
+  font-size: 1.6rem;
 }
 
+/* ===== INPUT GROUP ===== */
 .input-group {
-  margin: 12px 0;
+  margin-bottom: 16px;
 }
 
-.input-group input {
+/* ===== INPUT / SELECT ===== */
+.input-group input,
+.input-group select {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   border-radius: 10px;
-
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.05);
-
+  border: 1px solid #2a2f45;
+  background: #1f2937;
   color: white;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.3s;
 }
 
+/* Focus effect */
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+/* ===== BUTTON ===== */
 .expense-btn {
   width: 100%;
-  margin-top: 15px;
   padding: 12px;
-
-  border: none;
   border-radius: 10px;
-
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-  color: white;
-
-  cursor: pointer;
-}
-
-
-.dropdown {
-  width: 100%;
-  background: transparent;
   border: none;
-  outline: none;
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
   color: white;
-  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.dropdown option {
-  color: black;
+.expense-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
 }
 
+.expense-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== ERROR TEXT ===== */
+.error-text {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .expense-wrapper {
+    flex-direction: column;
+  }
+
+  .expense-left {
+    padding: 40px;
+    text-align: center;
+  }
+
+  .expense-right {
+    padding: 20px;
+  }
+}

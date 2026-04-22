@@ -6,6 +6,14 @@ import AddExpense from './pages/AddExpense';
 import Navbar from './pages/Navbar';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
+import SavingsGoals from './pages/SavingsGoals';
+import Report from './pages/Report';
+import AIChat from "./pages/AIChat";
+import Profile from './pages/Profile';
+import toast from "react-hot-toast";
+
+toast.success("Expense added!");
+toast.error("Something went wrong");
 
 /* ================= LAYOUT ================= */
 function Layout() {
@@ -26,6 +34,12 @@ function Layout() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/add-expense" element={<AddExpense />} />
+        <Route path="/goals" element={<SavingsGoals />} />
+        <Route path="/report" element={<Report />} />
+        <Route path="/ai" element={<AIChat />} />
+        <Route path="/profile" element={<Profile />} />
+        
+
       </Routes>
     </>
   );

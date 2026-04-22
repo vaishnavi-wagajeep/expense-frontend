@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
+
 function Navbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -26,6 +27,8 @@ function Navbar() {
           <Link to="/">Home</Link>
           <Link to="/dashboard">Dashboard</Link>
           <Link to="/about">About</Link>
+          <Link to="/report">Reports</Link>
+          <Link to="/ai">AI Assistant</Link>
         </div>
 
         {/* ACTIONS */}
