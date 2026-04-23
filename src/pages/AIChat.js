@@ -5,14 +5,37 @@ import "./AIChat.css";
 const formatTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
+const fmt = (n) =>
+  "₹" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+
 export default function AIChat() {
   const [messages, setMessages] = useState([
     { role: "bot", text: "👋 Hi! Ask me about your expenses", time: formatTime() }
   ]);
-  const [input, setInput]       = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [input, setInput]                   = useState("");
+  const [loading, setLoading]               = useState(false);
+  const [sidebarOpen, setSidebarOpen]       = useState(false);
+  const [activeChip, setActiveChip]         = useState(null);
+  const [summary, setSummary]               = useState(null);
+  const [summaryLoading, setSummaryLoading] = useState(true);
   const chatEndRef = useRef(null);
+
+  // ── Fetch real summary data on mount ──
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/expenses/summary", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        });
+        setSummary(res.data);
+      } catch (err) {
+        console.error("Summary fetch error:", err);
+      } finally {
+        setSummaryLoading(false);
+      }
+    };
+    fetchSummary();
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,6 +79,11 @@ export default function AIChat() {
     setLoading(false);
   };
 
+  const handleChip = (s, i) => {
+    setActiveChip(i);
+    sendMessage(s);
+  };
+
   const suggestions = [
     "Where do I spend most?",
     "How can I save money?",
@@ -64,13 +92,50 @@ export default function AIChat() {
     "Top category analysis",
   ];
 
+  // Build cards from real API data
+  const summaryCards = summary
+    ? [
+        {
+          label: "Total this month",
+          value: fmt(summary.totalThisMonth),
+          sub: summary.momDirection === "up"
+            ? `▲ ${summary.momPercent}% vs last month`
+            : `▼ ${summary.momPercent}% vs last month`,
+          subColor: summary.momDirection === "up" ? "#E24B4A" : "#1D9E75",
+        },
+        {
+          label: "Biggest category",
+          value: summary.biggestCategory || "N/A",
+          sub: summary.biggestCategory
+            ? fmt(summary.biggestCategoryAmount) + " spent"
+            : "No data yet",
+          subColor: "#888780",
+        },
+        {
+          label: "Budget used",
+          value: `${summary.budgetUsedPercent}%`,
+          sub: fmt(summary.budgetRemaining) + " remaining",
+          subColor: summary.budgetUsedPercent > 80 ? "#E24B4A" : "#BA7517",
+          progress: summary.budgetUsedPercent,
+        },
+        {
+          label: "Budget remaining",
+          value: fmt(summary.budgetRemaining),
+          sub: summary.budgetUsedPercent < 100 ? "Within budget ✓" : "Budget exceeded!",
+          subColor: summary.budgetUsedPercent < 100 ? "#1D9E75" : "#E24B4A",
+        },
+      ]
+    : [];
+
+  const userName = localStorage.getItem("userName") || "";
+  const initials = userName
+    ? userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
+    : "ME";
+
   return (
     <>
-      {/* ── FULL-PAGE BACKGROUND LAYER ── */}
-      {/* This sits behind everything, independent of any parent styles */}
       <div className="ai-bg-layer" aria-hidden="true" />
 
-      {/* ── SIDEBAR TOGGLE ── */}
       <button
         className="toggle-btn"
         onClick={() => setSidebarOpen(o => !o)}
@@ -79,7 +144,6 @@ export default function AIChat() {
         ☰
       </button>
 
-      {/* ── SIDEBAR ── */}
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
           <span className="sidebar-title">Conversations</span>
@@ -88,14 +152,17 @@ export default function AIChat() {
           <div className="sidebar-empty-icon">💬</div>
           <p>Your chat history<br />will appear here</p>
         </div>
-        <button className="sidebar-new-btn" onClick={() => setMessages([
-          { role: "bot", text: "👋 Hi! Ask me about your expenses", time: formatTime() }
-        ])}>
+        <button
+          className="sidebar-new-btn"
+          onClick={() => {
+            setMessages([{ role: "bot", text: "👋 Hi! Ask me about your expenses", time: formatTime() }]);
+            setActiveChip(null);
+          }}
+        >
           + New Chat
         </button>
       </aside>
 
-      {/* ── MAIN PAGE ── */}
       <main className="ai-page">
 
         {/* HEADER */}
@@ -118,10 +185,47 @@ export default function AIChat() {
           </div>
         </header>
 
-        {/* SUGGESTIONS */}
+        {/* SUMMARY CARDS — skeleton while loading, real data after */}
+        <div className="summary-cards">
+          {summaryLoading
+            ? Array(4).fill(0).map((_, i) => (
+                <div className="summary-card skeleton" key={i}>
+                  <span className="summary-card-label skeleton-line short" />
+                  <span className="summary-card-value skeleton-line" />
+                  <span className="summary-card-sub skeleton-line short" />
+                </div>
+              ))
+            : summaryCards.map((card, i) => (
+                <div className="summary-card" key={i}>
+                  <span className="summary-card-label">{card.label}</span>
+                  <span className="summary-card-value">{card.value}</span>
+                  {card.progress !== undefined && (
+                    <div className="summary-progress-bar">
+                      <div
+                        className="summary-progress-fill"
+                        style={{
+                          width: `${card.progress}%`,
+                          background: card.progress > 80 ? "#E24B4A" : "#BA7517"
+                        }}
+                      />
+                    </div>
+                  )}
+                  <span className="summary-card-sub" style={{ color: card.subColor }}>
+                    {card.sub}
+                  </span>
+                </div>
+              ))
+          }
+        </div>
+
+        {/* SUGGESTION CHIPS */}
         <div className="suggestion-box">
           {suggestions.map((s, i) => (
-            <button key={i} className="suggestion-btn" onClick={() => sendMessage(s)}>
+            <button
+              key={i}
+              className={`suggestion-btn ${activeChip === i ? "active" : ""}`}
+              onClick={() => handleChip(s, i)}
+            >
               {s}
             </button>
           ))}
@@ -129,8 +233,6 @@ export default function AIChat() {
 
         {/* CHAT WINDOW */}
         <div className="chat-window">
-
-          {/* Window chrome bar */}
           <div className="chat-chrome">
             <div className="chrome-dots">
               <span className="cdot cdot-red" />
@@ -144,30 +246,21 @@ export default function AIChat() {
             </div>
           </div>
 
-          {/* Messages */}
           <div className="chat-inner">
             <div className="chat-date-sep"><span>Today</span></div>
 
             {messages.map((msg, i) => (
               <div key={i} className={`message-row ${msg.role}`}>
                 {msg.role === "bot" && (
-                  <div className="avatar bot-avatar">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="#C19434" strokeWidth="1.5"/>
-                      <path d="M8 12h8M12 8v8" stroke="#C19434" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                  </div>
+                  <div className="avatar bot-avatar" title="AI Assistant">AI</div>
                 )}
                 <div className="bubble-wrap">
                   <div className={`bubble ${msg.role}`}>{msg.text}</div>
                   {msg.time && <span className="bubble-time">{msg.time}</span>}
                 </div>
                 {msg.role === "user" && (
-                  <div className="avatar user-avatar">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="8" r="4" stroke="#C19434" strokeWidth="1.5"/>
-                      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#C19434" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
+                  <div className="avatar user-avatar" title={userName || "You"}>
+                    {initials}
                   </div>
                 )}
               </div>
@@ -175,14 +268,9 @@ export default function AIChat() {
 
             {loading && (
               <div className="message-row bot">
-                <div className="avatar bot-avatar">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="#C19434" strokeWidth="1.5"/>
-                    <path d="M8 12h8M12 8v8" stroke="#C19434" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </div>
+                <div className="avatar bot-avatar">AI</div>
                 <div className="bubble-wrap">
-                  <div className="bubble bot typing">
+                  <div className="bubble bot typing-indicator">
                     <span /><span /><span />
                   </div>
                 </div>
@@ -207,7 +295,12 @@ export default function AIChat() {
               placeholder="Ask something about your finances…"
               onKeyDown={e => e.key === "Enter" && sendMessage()}
             />
-            <button className="send-btn" onClick={() => sendMessage()}>
+            <div className="input-kbd-hint">⌘↵</div>
+            <button
+              className={`send-btn ${loading ? "disabled" : ""}`}
+              onClick={() => sendMessage()}
+              disabled={loading}
+            >
               <span>Send</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"
@@ -216,8 +309,6 @@ export default function AIChat() {
             </button>
           </div>
           <div className="input-footer">
-            <span className="input-hint">Press <kbd>↵ Enter</kbd> to send</span>
-            <span className="input-footer-spacer" />
             <span className="input-model-tag">claude-3 · finance</span>
           </div>
         </div>
