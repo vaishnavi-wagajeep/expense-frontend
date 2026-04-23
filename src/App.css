@@ -7,6 +7,19 @@ body {
 .App {
   text-align: center;
 }
+/* 🔥 GLOBAL RESET (MANDATORY) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0b1020; /* fallback */
+}
+
 
 .App-logo {
   height: 40vmin;
