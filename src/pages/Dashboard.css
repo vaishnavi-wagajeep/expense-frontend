@@ -49,23 +49,15 @@
   font-family: var(--font);
   font-size: 15px;
   line-height: 1.6;
+  margin-top: -60px;
+
+
 }
 
 /* ═══════════════════════════════════════
    SIDEBAR
 ═══════════════════════════════════════ */
-.sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 28px 16px;
-  background: var(--bg-surface);
-  border-right: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  height: 100vh;
-}
+
 
 .logo {
   font-size: 18px;
@@ -101,19 +93,10 @@
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 400;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s
 }
 
-.sidebar a:hover,
-.sidebar a.active {
-  background: var(--purple-glow);
-  color: var(--purple-light);
-}
 
-.sidebar a.active {
-  border-left: 2px solid var(--purple);
-  padding-left: 10px;
-}
 
 /* ═══════════════════════════════════════
    MAIN CONTENT
@@ -533,4 +516,84 @@
   }
   .sidebar nav { flex-direction: row; gap: 6px; }
   .logo { margin-bottom: 0; margin-right: 20px; }
+}
+
+/* ================================
+   PREMIUM ENHANCEMENTS (SAFE)
+================================ */
+
+/* Smooth UI feel */
+* {
+  transition: all 0.18s ease;
+}
+
+/* Subtle premium background depth */
+.dashboard-layout {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(139,92,246,0.06), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(34,211,238,0.05), transparent 40%),
+    var(--bg-base);
+}
+
+/* Glass effect without changing layout */
+.stat-card,
+.chart-card,
+.budget-card,
+.insights-card {
+  background: rgba(19, 25, 38, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+/* Premium hover (very subtle) */
+.stat-card:hover,
+.chart-card:hover,
+.budget-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+/* Soft glow border on hover */
+.stat-card:hover,
+.chart-card:hover {
+  border-color: rgba(139,92,246,0.5);
+}
+
+/* Improve text clarity slightly */
+.dashboard-header h2 {
+  letter-spacing: -0.4px;
+}
+
+.subtext {
+  opacity: 0.85;
+}
+
+/* Inputs feel better */
+.month-selector select,
+.month-selector input {
+  transition: all 0.2s ease;
+}
+
+.month-selector select:hover,
+.month-selector input:hover {
+  border-color: var(--purple);
+}
+
+/* Scrollbar (small but premium detail) */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139,92,246,0.35);
+  border-radius: 10px;
+}
+
+/* Smooth page load */
+.dashboard-content {
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }

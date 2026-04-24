@@ -1,424 +1,208 @@
-/* ── PAGE ── */
-.pf-page {
+/* ===== PAGE BACKGROUND ===== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  
+  background:
+    radial-gradient(circle at 50% 0%, rgba(108,99,255,0.35), transparent 40%),
+    radial-gradient(circle at 50% 10%, rgba(56,189,248,0.25), transparent 50%),
+    linear-gradient(180deg, #0b1433 0%, #040714 60%, #020617 100%);
+}
+body {
+  background-attachment: fixed;
+}
+
+
+.profile-page {
   min-height: 100vh;
-  background: #060d1f;
-  font-family: inherit;
-  padding: 120px 24px 60px;
+   padding: 0 20px 60px; 
   display: flex;
-  align-items: flex-start;
   justify-content: center;
-  position: relative;
+   background: none; 
+
+  
 }
 
-.pf-page::before {
-  content: '';
-  position: fixed;
-  top: -200px; left: -200px;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-.pf-page::after {
-  content: '';
-  position: fixed;
-  bottom: -150px; right: -150px;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(56,189,248,0.1) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ── CONTAINER ── */
-.pf-container {
+/* ===== CONTAINER ===== */
+.profile-container {
   width: 100%;
-  max-width: 780px;
-  position: relative;
-  z-index: 1;
-  animation: fadeUp 0.5s ease both;
+  max-width: 900px;
+  color: white;
+  margin-top: 10px; 
+   margin-top: 50px; 
+ 
 }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── PAGE HEADER ── */
-.pf-header { margin-bottom: 32px; }
-
-.pf-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #6c63ff;
-  margin-bottom: 10px;
-}
-
-.pf-eyebrow-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #6c63ff;
-  box-shadow: 0 0 8px rgba(108,99,255,0.9);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.75); }
-}
-
-.pf-title {
-  font-size: 38px;
+/* ===== HEADER ===== */
+.title {
+  font-size: 36px;
   font-weight: 800;
-  color: #ffffff;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  margin-bottom: 8px;
 }
 
-.pf-subtitle {
-  font-size: 15px;
-  color: rgba(255,255,255,0.38);
-  font-weight: 400;
+.subtitle {
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 20px;
 }
 
-/* ══════════════════════════
-   OUTER CARD WRAPPER
-   — groups hero + body together
-══════════════════════════ */
-.pf-card-wrapper {
+/* ===== CARD BASE ===== */
+.card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(14px);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-top: 20px;
+}
+
+/* ===== HERO CARD ===== */
+.hero-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #34d399, #22c55e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.status {
+  background: rgba(34,197,94,0.2);
+  color: #22c55e;
+  padding: 4px 10px;
   border-radius: 20px;
-  overflow: visible; /* CRITICAL: never clip children */
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-}
-
-/* ══════════════
-   HERO BANNER
-══════════════ */
-.pf-hero {
-  width: 100%;
-  border-radius: 20px 20px 0 0;
-  background: linear-gradient(135deg,
-    rgba(108,99,255,0.35) 0%,
-    rgba(56,189,248,0.22) 100%
-  );
-  border: 1px solid rgba(255,255,255,0.14);
-  border-bottom: none;
-  /* KEY FIX: enough padding-bottom so avatar is NOT near the bottom edge */
-  padding: 28px 36px 28px;
-  display: flex;
-  align-items: center;  /* center vertically — no more bottom overflow */
-  gap: 22px;
-  position: relative;
-  /* NO overflow:hidden here — that was cutting the avatar */
-}
-
-/* Grid texture */
-.pf-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 20px 20px 0 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 36px 36px;
-  pointer-events: none;
-}
-
-/* ── AVATAR — fully inside hero, never clips ── */
-.pf-avatar-wrap {
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-}
-
-.pf-avatar {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6c63ff, #38bdf8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid rgba(255,255,255,0.2);
-  box-shadow:
-    0 0 0 1px rgba(108,99,255,0.4),
-    0 12px 32px rgba(0,0,0,0.4);
-  position: relative;
-}
-
-.pf-avatar-initials {
-  font-size: 28px;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.02em;
-}
-
-/* Online dot */
-.pf-avatar::after {
-  content: '';
-  position: absolute;
-  bottom: 3px; right: 3px;
-  width: 12px; height: 12px;
-  background: #22c55e;
-  border-radius: 50%;
-  border: 2px solid #1a2a5e;
-  box-shadow: 0 0 8px rgba(34,197,94,0.9);
-}
-
-.pf-hero-meta {
-  flex: 1;
-}
-
-.pf-hero-name {
-  font-size: 22px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.02em;
-  margin-bottom: 4px;
-}
-
-.pf-hero-email {
-  font-size: 13px;
-  color: rgba(255,255,255,0.5);
-  font-weight: 400;
-}
-
-.pf-hero-badge {
-  margin-left: auto;
-}
-
-.pf-badge-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(34,197,94,0.13);
-  border: 1px solid rgba(34,197,94,0.32);
   font-size: 12px;
-  font-weight: 600;
-  color: #4ade80;
-  letter-spacing: 0.04em;
 }
 
-.pf-badge-pill-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 6px rgba(74,222,128,0.9);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-/* ══════════════════════════════════
-   CARD BODY — LIGHTER navy-blue tone
-══════════════════════════════════ */
-.pf-card {
-  background: rgba(26, 42, 94, 0.75);  /* lighter blue-navy */
-  border: 1px solid rgba(255,255,255,0.13);
-  border-top: none;
-  border-radius: 0 0 20px 20px;
-  padding: 36px 36px 36px;
-  backdrop-filter: blur(24px);
-}
-
-/* ── SECTION LABEL ── */
-.pf-section-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-  margin-bottom: 22px;
+/* RIGHT SIDE */
+.hero-right {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  gap: 15px;
 }
 
-.pf-section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: rgba(255,255,255,0.08);
+.budget-box {
+  background: rgba(255,255,255,0.05);
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-align: center;
 }
 
-/* ── FIELDS ── */
-.pf-fields {
+.budget-box p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+}
+
+.budget-box h3 {
+  margin: 5px 0 0;
+}
+
+/* ===== GRID ===== */
+.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  margin-bottom: 32px;
 }
 
-.pf-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.pf-field--full { grid-column: 1 / -1; }
-
-.pf-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pf-badge {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.3);
-}
-
-.pf-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.pf-input-icon {
-  position: absolute;
-  left: 14px;
-  color: rgba(255,255,255,0.3);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.pf-rupee { font-size: 15px; font-weight: 500; }
-
-.pf-input {
+/* ===== INPUTS ===== */
+input {
   width: 100%;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 12px;
-  padding: 13px 16px 13px 42px;
-  font-size: 14px;
-  font-family: inherit;
-  font-weight: 500;
-  color: #ffffff;
-  outline: none;
-  transition: all 0.25s ease;
-  -webkit-appearance: none;
-}
-
-.pf-input::placeholder { color: rgba(255,255,255,0.2); }
-
-.pf-input:focus {
-  border-color: rgba(108,99,255,0.6);
-  background: rgba(108,99,255,0.1);
-  box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
-}
-
-.pf-input--disabled { opacity: 0.38; cursor: not-allowed; }
-
-.pf-input--mono {
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.04em;
-}
-
-.pf-hint {
-  font-size: 11px;
-  color: rgba(255,255,255,0.25);
-  font-style: italic;
-  line-height: 1.5;
-}
-
-/* ── DIVIDER ── */
-.pf-divider {
-  height: 1px;
-  background: rgba(255,255,255,0.08);
-  margin: 28px 0;
-}
-
-/* ── FOOTER ── */
-.pf-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-/* ── STATUS ── */
-.pf-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  min-height: 22px;
-  font-weight: 400;
-  transition: all 0.3s ease;
-}
-
-.pf-status--idle    { color: transparent; }
-.pf-status--loading { color: rgba(255,255,255,0.35); }
-.pf-status--success { color: #00d4aa; }
-.pf-status--error   { color: #f43f5e; }
-
-/* ── SAVE BUTTON ── */
-.pf-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 24px;
-  border-radius: 25px;
-  background: linear-gradient(135deg, #6c63ff, #38bdf8);
-  color: #fff;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
   border: none;
+  background: rgba(255,255,255,0.06);
+  color: white;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid #22c55e;
+}
+
+/* ===== PROGRESS ===== */
+.progress {
+  margin-top: 15px;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, #22c55e, #4ade80);
+  border-radius: 10px;
+}
+
+.progress-text {
+  font-size: 12px;
+  margin-top: 5px;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ===== BUTTONS ===== */
+.actions {
+  margin-top: 20px;
+}
+
+.save {
+  background: #22c55e;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: black;
+  font-weight: bold;
+  margin-right: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(56,189,248,0.35);
-  white-space: nowrap;
 }
 
-.pf-btn:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 12px 30px rgba(108,99,255,0.5);
+.cancel {
+  background: transparent;
+  border: 1px solid #334155;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
 }
 
-.pf-btn:active:not(:disabled) { transform: scale(0.98); }
-
-.pf-btn--dim {
-  opacity: 0.45;
-  background: rgba(255,255,255,0.08);
-  box-shadow: none;
-}
-.pf-btn--dim:hover:not(:disabled) { transform: none; box-shadow: none; }
-.pf-btn--loading { opacity: 0.8; cursor: wait; }
-
-.pf-spinner {
-  width: 14px; height: 14px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+/* ===== STATUS ===== */
+.success-msg {
+  color: #22c55e;
+  margin-top: 10px;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 600px) {
-  .pf-page { padding: 100px 16px 40px; }
-  .pf-hero { padding: 20px; flex-wrap: wrap; }
-  .pf-hero-badge { display: none; }
-  .pf-card { padding: 28px 20px; }
-  .pf-fields { grid-template-columns: 1fr; }
-  .pf-footer { flex-direction: column; align-items: flex-end; }
+.error-msg {
+  color: #f43f5e;
+  margin-top: 10px;
 }
+
+/* ===== DANGER ZONE ===== */
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+}
+
+

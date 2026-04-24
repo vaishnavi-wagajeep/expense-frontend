@@ -10,37 +10,36 @@ import SavingsGoals from './pages/SavingsGoals';
 import Report from './pages/Report';
 import AIChat from "./pages/AIChat";
 import Profile from './pages/Profile';
-import toast from "react-hot-toast";
-
-toast.success("Expense added!");
-toast.error("Something went wrong");
+import { Toaster } from "react-hot-toast";
+import Settings from './pages/Settings';
 
 /* ================= LAYOUT ================= */
 function Layout() {
   const location = useLocation();
 
-  // Hide navbar on these routes
-  const hideNavbarRoutes = ['/login', '/signup', '/dashboard'];
-
+  const hideNavbarRoutes = ['/login', '/signup'];
   const hideNavbar = hideNavbarRoutes.includes(location.pathname);
 
   return (
     <>
+      <Toaster position="top-right" />
       {!hideNavbar && <Navbar />}
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/add-expense" element={<AddExpense />} />
-        <Route path="/goals" element={<SavingsGoals />} />
-        <Route path="/report" element={<Report />} />
-        <Route path="/ai" element={<AIChat />} />
-        <Route path="/profile" element={<Profile />} />
-        
-
-      </Routes>
+      {/* Push page content below the fixed navbar (68px tall) */}
+      <div style={{ paddingTop: hideNavbar ? 0 : '68px' }}>
+        <Routes>
+          <Route path="/"            element={<Home />} />
+          <Route path="/login"       element={<Login />} />
+          <Route path="/signup"      element={<Signup />} />
+          <Route path="/dashboard"   element={<Dashboard />} />
+          <Route path="/add-expense" element={<AddExpense />} />
+          <Route path="/goals"       element={<SavingsGoals />} />
+          <Route path="/report"      element={<Report />} />
+          <Route path="/ai"          element={<AIChat />} />
+          <Route path="/profile"     element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </div>
     </>
   );
 }

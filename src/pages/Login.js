@@ -11,15 +11,14 @@ function Login() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const res = await axios.post('http://localhost:5000/auth/login', form);
       localStorage.setItem('token', res.data.token);
       alert("Login successful");
-      window.location.href = "/dashboard";
+      window.location.href = "/";  // ← changed from "/dashboard" to "/"
     } catch (err) {
       alert(err?.response?.data?.message || "Server error");
     } finally {
