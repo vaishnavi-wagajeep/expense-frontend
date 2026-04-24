@@ -50,7 +50,7 @@ function Dashboard() {
   const [loading,       setLoading]       = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear,  setSelectedYear]  = useState(new Date().getFullYear());
-  const [budget,        setBudget]        = useState(10000);
+  const [budget, setBudget] = useState(0);
 
   // ── FETCH ──────────────────────────────────────────────
   useEffect(() => {
@@ -58,7 +58,7 @@ function Dashboard() {
       setLoading(true);
       const token = localStorage.getItem('token');
       try {
-        const [expRes, insRes] = await Promise.all([
+        const [expRes, insRes, profileRes] = await Promise.all([
           axios.get(
             `http://localhost:5000/expenses?month=${selectedMonth}&year=${selectedYear}`,
             { headers: { Authorization: `Bearer ${token}` } }
@@ -66,10 +66,15 @@ function Dashboard() {
           axios.get(
             `http://localhost:5000/insights`,
             { headers: { Authorization: `Bearer ${token}` } }
+          ),
+          axios.get(
+            `http://localhost:5000/user/profile`,
+            { headers: { Authorization: `Bearer ${token}` } }
           )
         ]);
         setExpenses(expRes.data);
         setInsights(insRes.data.insights || []);
+        setBudget(Number(profileRes.data.Budget) || 0);
       } catch (err) {
         console.error(err);
       } finally {

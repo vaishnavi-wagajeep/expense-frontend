@@ -4,7 +4,7 @@ import "./Profile.css";
 
 function Profile() {
   const [profile, setProfile] = useState({ Name: "", Email: "", Budget: "" });
-  const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const [status, setStatus] = useState("idle");
   const [touched, setTouched] = useState(false);
 
   const token = localStorage.getItem("token");
@@ -47,7 +47,6 @@ function Profile() {
     }
   };
 
-  /* Avatar initials */
   const initials = profile.Name
     ? profile.Name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
     : "?";
@@ -66,30 +65,37 @@ function Profile() {
           <p className="pf-subtitle">Manage your personal details and monthly budget</p>
         </div>
 
-        {/* ── CARD ── */}
-        <div className="pf-card">
-
-          {/* Avatar strip */}
-          <div className="pf-avatar-row">
+        {/* ── HERO BANNER ── */}
+        <div className="pf-hero">
+          <div className="pf-avatar-wrap">
             <div className="pf-avatar">
               <span className="pf-avatar-initials">{initials}</span>
-              <span className="pf-avatar-ring" />
-            </div>
-            <div className="pf-avatar-meta">
-              <p className="pf-avatar-name">{profile.Name || "—"}</p>
-              <p className="pf-avatar-email">{profile.Email || "—"}</p>
             </div>
           </div>
 
-          <div className="pf-divider" />
+          <div className="pf-hero-meta">
+            <p className="pf-hero-name">{profile.Name || "—"}</p>
+            <p className="pf-hero-email">{profile.Email || "—"}</p>
+          </div>
 
-          {/* Fields */}
+          <div className="pf-hero-badge">
+            <div className="pf-badge-pill">
+              <span className="pf-badge-pill-dot" />
+              Active
+            </div>
+          </div>
+        </div>
+
+        {/* ── CARD BODY ── */}
+        <div className="pf-card">
+
+          <p className="pf-section-label">Personal Info</p>
+
           <div className="pf-fields">
 
+            {/* Full Name */}
             <div className="pf-field">
-              <label className="pf-label">
-                Full Name
-              </label>
+              <label className="pf-label">Full Name</label>
               <div className="pf-input-wrap">
                 <svg className="pf-input-icon" width="14" height="14" viewBox="0 0 16 16" fill="none">
                   <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.4"/>
@@ -106,12 +112,13 @@ function Profile() {
               </div>
             </div>
 
+            {/* Email */}
             <div className="pf-field">
               <label className="pf-label">
                 Email Address
                 <span className="pf-badge">Read only</span>
               </label>
-              <div className="pf-input-wrap pf-input-wrap--disabled">
+              <div className="pf-input-wrap">
                 <svg className="pf-input-icon" width="14" height="14" viewBox="0 0 16 16" fill="none">
                   <rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.4"/>
                   <path d="M1 6l7 4 7-4" stroke="currentColor" strokeWidth="1.4"/>
@@ -125,10 +132,9 @@ function Profile() {
               </div>
             </div>
 
-            <div className="pf-field">
-              <label className="pf-label">
-                Monthly Budget
-              </label>
+            {/* Monthly Budget — full width */}
+            <div className="pf-field pf-field--full">
+              <label className="pf-label">Monthly Budget</label>
               <div className="pf-input-wrap">
                 <span className="pf-input-icon pf-rupee">₹</span>
                 <input
@@ -148,9 +154,8 @@ function Profile() {
 
           <div className="pf-divider" />
 
-          {/* Footer / action row */}
+          {/* ── FOOTER ── */}
           <div className="pf-footer">
-            {/* Status message */}
             <div className={`pf-status pf-status--${status}`}>
               {status === "success" && (
                 <>
@@ -170,6 +175,7 @@ function Profile() {
                   Update failed — please try again
                 </>
               )}
+              {status === "loading" && "Saving changes…"}
             </div>
 
             <button
