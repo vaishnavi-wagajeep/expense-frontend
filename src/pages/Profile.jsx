@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
 import "./Profile.css";
 
 function Profile() {
   const [profile, setProfile] = useState({ Name: "", Email: "", Budget: "" });
+  const [spent, setSpent] = useState(0);
   const [status, setStatus] = useState("idle");
   const [touched, setTouched] = useState(false);
 
   const token = localStorage.getItem("token");
 
+  /* ================= FETCH PROFILE ================= */
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -20,13 +23,31 @@ function Profile() {
         console.log("Profile fetch error:", err);
       }
     };
-    fetchProfile();
+
+    if (token) fetchProfile();
   }, [token]);
 
+  /* ================= FETCH SPENT ================= */
+  useEffect(() => {
+    const fetchSpent = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/expenses/total", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setSpent(res.data.total);
+      } catch (err) {
+        console.log("Spent fetch error:", err);
+      }
+    };
+
+    if (token) fetchSpent();
+  }, [token]);
+
+  /* ================= HANDLERS ================= */
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
     setTouched(true);
-    if (status === "success" || status === "error") setStatus("idle");
+    if (status !== "idle") setStatus("idle");
   };
 
   const updateProfile = async () => {
@@ -37,26 +58,54 @@ function Profile() {
         { name: profile.Name, budget: profile.Budget },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       setStatus("success");
       setTouched(false);
+
+      // Refresh spent after update
+      try {
+        const res = await axios.get("http://localhost:5000/expenses/total", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setSpent(res.data.total);
+      } catch {}
+
       setTimeout(() => setStatus("idle"), 3000);
     } catch (err) {
-      console.log(err);
       setStatus("error");
       setTimeout(() => setStatus("idle"), 3000);
     }
   };
 
+  /* ================= DERIVED DATA ================= */
   const initials = profile.Name
-    ? profile.Name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+    ? profile.Name
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
     : "?";
 
-  const spent = 31200; // temporary (you can make dynamic later)
-  const percent = profile.Budget ? (spent / profile.Budget) * 100 : 0;
+  const percent = profile.Budget
+    ? (spent / profile.Budget) * 100
+    : 0;
+
+  const safePercent = Math.min(percent, 100);
+
+  const getColor = () => {
+    if (percent < 60) return "#22c55e";
+    if (percent < 90) return "#f59e0b";
+    return "#ef4444";
+  };
 
   return (
     <div className="profile-page">
-      <div className="profile-container">
+      <motion.div
+        className="profile-container"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
 
         {/* HEADER */}
         <h1 className="title">Your Profile</h1>
@@ -65,9 +114,15 @@ function Profile() {
         </p>
 
         {/* HERO CARD */}
-        <div className="card hero-card">
+        <motion.div className="card hero-card" whileHover={{ scale: 1.01 }}>
           <div className="hero-left">
-            <div className="avatar">{initials}</div>
+
+            {/* AVATAR */}
+            <div className="avatar">
+              {initials}
+              <span className="avatar-dot"></span>
+            </div>
+
             <div>
               <h2>{profile.Name || "—"}</h2>
               <p>{profile.Email || "—"}</p>
@@ -81,17 +136,17 @@ function Profile() {
               <h3>₹{profile.Budget || 0}</h3>
             </div>
             <div className="budget-box">
-              <p>Spent so far</p>
+              <p>Spent</p>
               <h3>₹{spent}</h3>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* GRID SECTION */}
+        {/* GRID */}
         <div className="grid">
 
-          {/* PERSONAL INFO */}
-          <div className="card">
+          {/* PERSONAL */}
+          <motion.div className="card" whileHover={{ y: -5 }}>
             <h3>Personal Info</h3>
 
             <input
@@ -107,10 +162,10 @@ function Profile() {
               value={profile.Email || ""}
               disabled
             />
-          </div>
+          </motion.div>
 
           {/* BUDGET */}
-          <div className="card">
+          <motion.div className="card" whileHover={{ y: -5 }}>
             <h3>Monthly Budget</h3>
 
             <input
@@ -121,19 +176,22 @@ function Profile() {
             />
 
             <div className="progress">
-              <div
+              <motion.div
                 className="progress-bar"
-                style={{ width: `${percent}%` }}
-              ></div>
+                initial={{ width: 0 }}
+                animate={{ width: `${safePercent}%` }}
+                transition={{ duration: 1 }}
+                style={{ background: getColor() }}
+              />
             </div>
 
             <p className="progress-text">
               ₹{spent} spent • {Math.round(percent)}% used
             </p>
-          </div>
+          </motion.div>
         </div>
 
-        {/* ACTION BUTTONS */}
+        {/* ACTIONS */}
         <div className="actions">
           <button
             className="save"
@@ -146,7 +204,7 @@ function Profile() {
           <button className="cancel">Cancel</button>
         </div>
 
-        {/* STATUS MESSAGE */}
+        {/* STATUS */}
         {status === "success" && (
           <p className="success-msg">Profile updated successfully</p>
         )}
@@ -154,10 +212,7 @@ function Profile() {
           <p className="error-msg">Update failed. Try again.</p>
         )}
 
-        {/* DANGER ZONE */}
-      
-
-      </div>
+      </motion.div>
     </div>
   );
 }
