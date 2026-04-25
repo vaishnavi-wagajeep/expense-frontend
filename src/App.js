@@ -13,6 +13,8 @@ import Profile from './pages/Profile';
 import { Toaster } from "react-hot-toast";
 import Settings from './pages/Settings';
 import ResetPassword from "./pages/ResetPassword";
+import Budget from './pages/Budget';
+
 
 <Route path="/reset-password" element={<ResetPassword />} />
 
@@ -43,6 +45,8 @@ function Layout() {
           <Route path="/profile"     element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/budget" element={<Budget />} />
+
         </Routes>
       </div>
     </>

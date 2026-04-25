@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import CountUp from "react-countup";
 import jsPDF from "jspdf";
@@ -9,16 +9,26 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
+  Title,
   Tooltip,
   Legend,
+  ArcElement,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
 import "./Report.css";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
-/* ========================= FORMATTER ========================= */
+/* ========================= */
 const formatCurrency = (amount) => {
   if (amount === null || amount === undefined) return "—";
   return new Intl.NumberFormat("en-IN", {
@@ -35,49 +45,42 @@ function Report() {
   const containerRef = useRef();
   const token = localStorage.getItem("token");
 
-  /* ========================= FETCH ========================= */
-  const fetchData = useCallback(async () => {
-    try {
-      const [m, y] = await Promise.all([
-        axios.get(`http://localhost:5000/report/monthly?year=${year}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get(`http://localhost:5000/report/yearly`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-
-      setMonthlyData(m.data || []);
-      setYearlyData(y.data || []);
-    } catch (err) {
-      console.error("Fetch error:", err);
-    }
-  }, [year, token]);
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [m, y] = await Promise.all([
+          axios.get(`http://localhost:5000/report/monthly?year=${year}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`http://localhost:5000/report/yearly`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        setMonthlyData(m.data || []);
+        setYearlyData(y.data || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchData();
-  }, [fetchData]);
-
-  /* 🔥 Auto-refresh every 5 sec */
-  useEffect(() => {
-    const interval = setInterval(fetchData, 5000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+  }, [year, token]);
 
   /* ========================= CALCULATIONS ========================= */
   const totalMonthly = monthlyData.reduce((s, d) => s + Number(d.total), 0);
   const totalYearly = yearlyData.reduce((s, d) => s + Number(d.total), 0);
 
-  const peakMonth = monthlyData.reduce(
-    (max, curr) => (curr.total > max.total ? curr : max),
-    { total: 0 }
-  );
+  const peakMonth = monthlyData.length
+    ? monthlyData.reduce((a, b) => (a.total > b.total ? a : b))
+    : null;
 
   const avgMonth = monthlyData.length
     ? totalMonthly / monthlyData.length
     : 0;
 
   const prevYear = year - 1;
+
   const prevYearData = yearlyData.find((y) => y.year === prevYear);
   const currentYearData = yearlyData.find((y) => y.year === year);
 
@@ -123,7 +126,7 @@ function Report() {
     pdf.save("expense-report.pdf");
   };
 
-  /* ========================= CHART OPTIONS ========================= */
+  /* ========================= CHART ========================= */
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -163,7 +166,6 @@ function Report() {
     return g;
   };
 
-  /* ========================= CHART DATA ========================= */
   const monthlyChart = {
     labels: monthlyData.map((d) =>
       new Date(0, d.month - 1).toLocaleString("default", {
@@ -176,7 +178,6 @@ function Report() {
         backgroundColor: (ctx) =>
           gradient(ctx, "#00d4aa", "#4f8ef7"),
         borderRadius: 10,
-        barPercentage: 0.6,
       },
     ],
   };
@@ -189,7 +190,6 @@ function Report() {
         backgroundColor: (ctx) =>
           gradient(ctx, "#4f8ef7", "#00d4aa"),
         borderRadius: 10,
-        barPercentage: 0.6,
       },
     ],
   };
@@ -219,7 +219,7 @@ function Report() {
           <div className="rp-stat-card">
             <p>Peak Month</p>
             <div className="rp-stat-value">
-              {peakMonth.month
+              {peakMonth
                 ? new Date(0, peakMonth.month - 1).toLocaleString("default", { month: "short" })
                 : "—"}
             </div>
