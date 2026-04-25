@@ -17,38 +17,31 @@
   margin: 0 auto;
 }
 
-/* ===== NAVBAR (PREMIUM) ===== */
+/* ===== NAVBAR ===== */
 .navbar {
   width: 100%;
-  padding: 12px 26px;
+  padding: 14px 26px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 999px;
 
-  /* 🔥 PREMIUM GLASS */
-  background: linear-gradient(
-    135deg,
-    rgba(15, 23, 42, 0.65),
-    rgba(15, 23, 42, 0.35)
-  );
+  border-radius: 999px;
+  position: relative;
+
+  background: rgba(2, 6, 23, 0.6);
   backdrop-filter: blur(22px);
 
-  /* 🔥 CLEAN BORDER */
   border: 1px solid rgba(255,255,255,0.08);
 
-  /* 🔥 DEPTH (VERY IMPORTANT) */
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.5),
-    0 0 0 1px rgba(255,255,255,0.04),
+    0 10px 40px rgba(0,0,0,0.5),
     inset 0 1px 0 rgba(255,255,255,0.08);
 
-  margin-top: 10px;
-  position: relative;
   transition: all 0.3s ease;
 }
 
-/* SOFT TOP LIGHT */
+/* TOP LIGHT */
 .navbar::before {
   content: "";
   position: absolute;
@@ -59,7 +52,7 @@
     rgba(255,255,255,0.12),
     transparent 40%
   );
-  opacity: 0.4;
+  opacity: 0.3;
   pointer-events: none;
 }
 
@@ -67,7 +60,6 @@
 .logo {
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.4px;
   color: #f8fafc;
 }
 
@@ -99,7 +91,7 @@
   color: #ffffff;
 }
 
-/* PREMIUM UNDERLINE */
+/* UNDERLINE */
 .nav-center a::after {
   content: "";
   position: absolute;
@@ -125,17 +117,17 @@
   gap: 10px;
 }
 
-/* ===== BUTTON BASE ===== */
+/* ===== BUTTONS ===== */
 .btn {
   padding: 8px 16px;
   border-radius: 999px;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.25s ease;
   border: none;
+  transition: all 0.25s ease;
 }
 
-/* ===== PRIMARY ===== */
+/* PRIMARY */
 .btn.primary {
   background: linear-gradient(135deg, #6366f1, #38bdf8);
   color: white;
@@ -143,10 +135,9 @@
 }
 .btn.primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(56,189,248,0.5);
 }
 
-/* ===== ADD BUTTON ===== */
+/* ADD BUTTON */
 .add-btn {
   background: linear-gradient(135deg, #22c55e, #4ade80);
   color: #022c22;
@@ -154,10 +145,9 @@
 }
 .add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(34,197,94,0.4);
 }
 
-/* ===== GHOST ===== */
+/* GHOST */
 .btn.ghost {
   color: #cbd5f5;
   border: 1px solid rgba(255,255,255,0.12);
@@ -167,18 +157,26 @@
   background: rgba(255,255,255,0.08);
 }
 
-/* ===== PROFILE AVATAR ===== */
+/* ===== PROFILE ===== */
+.profile-wrapper {
+  position: relative;
+}
+
 .profile-avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
+
   background: linear-gradient(135deg, #6366f1, #38bdf8);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-size: 14px;
   font-weight: 700;
   color: white;
+
   cursor: pointer;
 
   border: 2px solid rgba(255,255,255,0.25);
@@ -211,82 +209,125 @@
 /* ===== DROPDOWN ===== */
 .profile-dropdown {
   position: absolute;
-  top: 52px;
+  top: 55px;
   right: 0;
-  width: 220px;
+  width: 260px;
 
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(24px);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(18px);
 
-  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
-
   padding: 10px;
 
-  box-shadow:
-    0 20px 60px rgba(0,0,0,0.7),
-    0 0 0 1px rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 
   animation: fadeSlideDown 0.2s ease;
+  z-index: 999;
 }
 
-/* ===== DROPDOWN ITEMS ===== */
-.dropdown-item {
+/* HEADER */
+.dropdown-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 10px;
-  border-radius: 10px;
-  font-size: 13px;
-  color: #cbd5e1;
-  transition: all 0.2s ease;
+  gap: 12px;
+  padding: 10px;
 }
 
-.dropdown-item:hover {
-  background: rgba(255,255,255,0.06);
+.dropdown-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #6366f1, #06b6d4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
   color: white;
 }
 
-/* LOGOUT */
+.dropdown-name {
+  font-weight: 600;
+  color: #fff;
+  font-size: 14px;
+}
+
+.dropdown-email {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ===== DROPDOWN ITEMS (IMPROVED) ===== */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+/* Highlight first item (Edit Profile) */
+.dropdown-item:first-of-type {
+  background: rgba(99,102,241,0.12);
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(99,102,241,0.25),
+    rgba(56,189,248,0.2)
+  );
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.dropdown-item:active {
+  transform: scale(0.96);
+}
+
+/* DIVIDER */
+.dropdown-divider {
+  border: none;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 8px 0;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
 .logout-item {
   color: #f87171;
-}
-.logout-item:hover {
-  background: rgba(248,113,113,0.1);
-}
-
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  padding: 18px 8%;
-
-  /* 🔥 FIX HERE */
-  background: rgba(2, 6, 23, 0.4);  /* darker + matches page */
-  backdrop-filter: blur(20px);
-
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-
-  /* smooth blending */
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-
-.navbar::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  background: transparent;
+  border: none;
   width: 100%;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(99,102,241,0.6),
-    transparent
-  );
+  text-align: left;
+}
+
+.logout-item:hover {
+  background: rgba(248, 113, 113, 0.15);
+  color: #fca5a5;
 }

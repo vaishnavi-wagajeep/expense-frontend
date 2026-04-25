@@ -12,6 +12,10 @@ import AIChat from "./pages/AIChat";
 import Profile from './pages/Profile';
 import { Toaster } from "react-hot-toast";
 import Settings from './pages/Settings';
+import ResetPassword from "./pages/ResetPassword";
+
+<Route path="/reset-password" element={<ResetPassword />} />
+
 
 /* ================= LAYOUT ================= */
 function Layout() {
@@ -38,6 +42,7 @@ function Layout() {
           <Route path="/ai"          element={<AIChat />} />
           <Route path="/profile"     element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </div>
     </>

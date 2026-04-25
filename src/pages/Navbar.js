@@ -11,14 +11,16 @@ function Navbar() {
   const [profile, setProfile] = useState({ Name: '', Email: '' });
   const dropdownRef = useRef(null);
 
+  // ✅ LOGOUT FUNCTION
   const handleLogout = () => {
     localStorage.removeItem('token');
+    setProfile({ Name: '', Email: '' });
     navigate('/login');
   };
 
   const isActive = (path) => location.pathname === path;
 
-  // Fetch real user name & email
+  // Fetch user profile
   useEffect(() => {
     if (!token) return;
     const fetchProfile = async () => {
@@ -45,7 +47,7 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Avatar initials from real name
+  // Avatar initials
   const initials = profile.Name
     ? profile.Name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
     : '?';
@@ -63,7 +65,6 @@ function Navbar() {
         <div className="nav-center">
           <Link to="/" className={isActive('/') ? 'active' : ''}>Home</Link>
           <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''}>Dashboard</Link>
-          <Link to="/about" className={isActive('/about') ? 'active' : ''}>About</Link>
           <Link to="/report" className={isActive('/report') ? 'active' : ''}>Reports</Link>
           <Link to="/ai" className={isActive('/ai') ? 'active' : ''}>AI Assistant</Link>
         </div>
@@ -76,12 +77,11 @@ function Navbar() {
                 + Add
               </Link>
 
-              {/* PROFILE AVATAR + DROPDOWN */}
+              {/* PROFILE */}
               <div className="profile-wrapper" ref={dropdownRef}>
                 <div
                   className="profile-avatar"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  title="Profile"
                 >
                   <span>{initials}</span>
                 </div>
@@ -89,7 +89,7 @@ function Navbar() {
                 {dropdownOpen && (
                   <div className="profile-dropdown">
 
-                    {/* Header */}
+                    {/* HEADER */}
                     <div className="dropdown-header">
                       <div className="dropdown-avatar">{initials}</div>
                       <div>
@@ -100,6 +100,7 @@ function Navbar() {
 
                     <hr className="dropdown-divider" />
 
+                    {/* EDIT PROFILE */}
                     <Link
                       to="/profile"
                       className="dropdown-item"
@@ -108,27 +109,24 @@ function Navbar() {
                       👤 Edit Profile
                     </Link>
 
+                    {/* RESET PASSWORD */}
                     <Link
-                      to="/dashboard"
+                      to="/reset-password"
                       className="dropdown-item"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      📊 Dashboard
-                    </Link>
-
-                    <Link
-                      to="/report"
-                      className="dropdown-item"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      📈 Reports
+                      ♻️ Reset Password
                     </Link>
 
                     <hr className="dropdown-divider" />
 
+                    {/* 🚪 LOGOUT */}
                     <button
                       className="dropdown-item logout-item"
-                      onClick={handleLogout}
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        handleLogout();
+                      }}
                     >
                       🚪 Logout
                     </button>
