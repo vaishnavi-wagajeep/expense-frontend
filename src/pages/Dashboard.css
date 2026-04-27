@@ -323,3 +323,81 @@
     display: none;
   }
 }
+
+
+.alert-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 999999; /* 🔥 CRITICAL FIX */
+}
+
+.alert-box {
+  background: #0f172a;
+  color: #e2e8f0;
+
+  padding: 22px 26px;
+  border-radius: 14px;
+
+  width: 320px;
+  text-align: center;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+
+  animation: popIn 0.25s ease;
+  z-index: 1000000;
+}
+
+.alert-box button {
+  margin-top: 14px;
+  padding: 8px 14px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #4ade80;
+  color: #0f172a;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+@keyframes popIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.month-selector select {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 8px 12px;
+  border-radius: 10px;
+
+  /* important for native dropdown rendering */
+  -webkit-text-fill-color: #ffffff;
+  opacity: 1;
+}
+
+.month-selector select option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+.month-selector {
+  color: white;
+}
+
+select {
+  color-scheme: dark;
+}

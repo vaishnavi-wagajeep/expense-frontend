@@ -16,25 +16,24 @@ function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const res = await axios.post('http://localhost:5000/auth/login', form);
+  try {
+    const res = await axios.post('http://localhost:5000/auth/login', form);
 
-      localStorage.setItem('token', res.data.token);
+    // ✅ STORE EVERYTHING (CRITICAL FIX)
+    localStorage.setItem('token', res.data.token);
+    localStorage.setItem('user', JSON.stringify(res.data.user)); // 🔥 FIX
+    localStorage.setItem('userName', res.data.user.name); // for AIChat avatar
 
-      // ❌ remove alert (if you don’t want popup)
-      // alert("Login successful");
-
-      // ✅ smooth redirect to HOME page
-      navigate('/');
-    } catch (err) {
-      alert(err?.response?.data?.message || "Server error");
-    } finally {
-      setLoading(false);
-    }
-  };
+    navigate('/');
+  } catch (err) {
+    alert(err?.response?.data?.message || "Server error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="login-page" style={{ backgroundImage: "url('/login_bg.jpg')" }}>

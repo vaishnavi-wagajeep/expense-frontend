@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./AddExpense.css";
@@ -30,14 +29,12 @@ function AddExpense() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  /* ===== NEW STATES ===== */
   const [monthTotal, setMonthTotal] = useState(0);
   const [entryCount, setEntryCount] = useState(0);
   const [topCategory, setTopCategory] = useState("—");
 
   const token = localStorage.getItem("token");
 
-  /* ================= FETCH STATS ================= */
   const fetchStats = async () => {
     try {
       const res = await axios.get("http://localhost:5000/expenses", {
@@ -55,7 +52,13 @@ function AddExpense() {
       let categoryMap = {};
 
       data.forEach((e) => {
-        const d = new Date(e.Date);
+        // ✅ SAFE DATE FIX (timezone-proof)
+        if (!e.Date) return;
+
+        const d = new Date(`${e.Date}T00:00:00`);
+
+        // extra safety check
+        if (isNaN(d)) return;
 
         if (
           d.getMonth() === currentMonth &&
@@ -69,7 +72,6 @@ function AddExpense() {
         }
       });
 
-      /* find top category */
       let top = "—";
       let max = 0;
 
@@ -92,7 +94,6 @@ function AddExpense() {
     if (token) fetchStats();
   }, []);
 
-  /* ================= FORM ================= */
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
@@ -101,8 +102,6 @@ function AddExpense() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
     if (!form.amount || !form.date) {
       setError("Amount and Date are required.");
@@ -139,7 +138,7 @@ function AddExpense() {
         notes: "",
       });
 
-      fetchStats(); // 🔥 refresh stats instantly
+      fetchStats();
     } catch (err) {
       setError(err?.response?.data?.error || "Something went wrong.");
     } finally {
@@ -152,9 +151,11 @@ function AddExpense() {
 
   return (
     <div className="expense-wrapper">
+
       {/* LEFT */}
       <div className="expense-left">
         <div className="left-content">
+
           <div className="left-eyebrow">
             <span className="left-eyebrow-dot"></span>
             AI-Powered Tracking
@@ -171,12 +172,9 @@ function AddExpense() {
             Stay in control of your money.
           </p>
 
-          {/* 🔥 LIVE STATS */}
           <div className="left-stats">
             <div className="left-stat">
-              <div className="left-stat-value">
-                ₹{monthTotal.toFixed(0)}
-              </div>
+              <div className="left-stat-value">₹{monthTotal.toFixed(0)}</div>
               <div className="left-stat-label">This Month</div>
             </div>
 
@@ -201,12 +199,14 @@ function AddExpense() {
               </div>
             ))}
           </div>
+
         </div>
       </div>
 
       {/* RIGHT */}
       <div className="expense-right">
         <div className="expense-card">
+
           <div className="card-header">
             <h2>Add Expense</h2>
             <p>Fill in the details below.</p>
@@ -215,17 +215,37 @@ function AddExpense() {
           {error && <div className="error-banner">⚠ {error}</div>}
 
           <form onSubmit={handleSubmit}>
+
             <div className="field floating">
               <div className="field-wrap">
                 <span className="field-icon">{selectedCatIcon}</span>
-                <select name="category" value={form.category} onChange={handleChange}>
-                  <option value=""></option>
+
+                <select
+                  name="category"
+                  value={form.category}
+                  onChange={handleChange}
+                  className="expense-select"
+                  style={{
+                    backgroundColor: "#0f172a",
+                    color: "white",
+                    WebkitTextFillColor: "white",
+                  }}
+                >
+                  <option value="" disabled>
+                    Select Category
+                  </option>
+
                   {CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>
+                    <option
+                      key={c.value}
+                      value={c.value}
+                      style={{ backgroundColor: "#0f172a", color: "white" }}
+                    >
                       {c.icon} {c.label}
                     </option>
                   ))}
                 </select>
+
                 <label>Category</label>
               </div>
             </div>
@@ -274,6 +294,7 @@ function AddExpense() {
             <button className="expense-btn" disabled={loading}>
               {loading ? "Adding…" : "Add Expense →"}
             </button>
+
           </form>
         </div>
       </div>
@@ -284,4 +305,3 @@ function AddExpense() {
 }
 
 export default AddExpense;
-

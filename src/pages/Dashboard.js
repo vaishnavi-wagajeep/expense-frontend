@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
+import { useLocation } from 'react-router-dom'; // ✅ ADDED
 
 import {
   Chart as ChartJS,
@@ -52,37 +53,46 @@ function Dashboard() {
   const [selectedYear,  setSelectedYear]  = useState(new Date().getFullYear());
   const [budget, setBudget] = useState(0);
 
+  const location = useLocation(); // ✅ ADDED
+
   // ── FETCH ──────────────────────────────────────────────
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      try {
-        const [expRes, insRes, profileRes] = await Promise.all([
-          axios.get(
-            `http://localhost:5000/expenses?month=${selectedMonth}&year=${selectedYear}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          ),
-          axios.get(
-            `http://localhost:5000/insights`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          ),
-          axios.get(
-            `http://localhost:5000/user/profile`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
-        ]);
-        setExpenses(expRes.data);
-        setInsights(insRes.data.insights || []);
-        setBudget(Number(profileRes.data.Budget) || 0);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [selectedMonth, selectedYear]);
+  const fetchData = async () => {
+    setLoading(true);
+    const token = localStorage.getItem('token');
+
+    try {
+      const [expRes, insRes, profileRes] = await Promise.all([
+        axios.get(
+          `http://localhost:5000/expenses?month=${selectedMonth}&year=${selectedYear}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        ),
+
+        axios.get(
+  `http://localhost:5000/insights?month=${selectedMonth}&year=${selectedYear}`,
+  { headers: { Authorization: `Bearer ${token}` } }
+),
+
+
+        axios.get(
+          `http://localhost:5000/user/profile`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+      ]);
+
+      setExpenses(expRes.data);
+      setInsights(insRes.data.insights || []);
+      setBudget(Number(profileRes.data.Budget) || 0);
+
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [selectedMonth, selectedYear, location.pathname]); // ✅ FIXED HERE
 
   // ── DERIVED DATA ───────────────────────────────────────
   const total = expenses.reduce((sum, e) => sum + (Number(e.Amount) || 0), 0);
@@ -107,12 +117,12 @@ function Dashboard() {
     if (percentage < 80) return "#facc15";
     return "#f87171";
   };
+  
 
   // ── RENDER ─────────────────────────────────────────────
   return (
     <div className="dashboard-layout">
 
-      {/* ── SIDEBAR ── */}
       <aside className="sidebar">
         <h2 className="logo">
           <span>ExpenseX</span>
@@ -125,7 +135,6 @@ function Dashboard() {
 
       <main className="dashboard-content">
 
-        {/* ── ALERT ── */}
         {showAlert && (
           <div className="alert-popup">
             <div className="alert-box">
@@ -140,7 +149,6 @@ function Dashboard() {
           </div>
         )}
 
-        {/* ── HEADER ── */}
         <div className="dashboard-header">
           <h2 className="gradient-text">Dashboard Overview</h2>
           <p className="subtext">Track your spending insights</p>
@@ -166,7 +174,6 @@ function Dashboard() {
           <div className="empty-state">Loading…</div>
         ) : (
           <>
-            {/* ── STAT CARDS ── */}
             <p className="section-label">Overview</p>
             <div className="stats-grid">
               <div className="stat-card">
@@ -190,7 +197,6 @@ function Dashboard() {
               </div>
             </div>
 
-            {/* ── INSIGHTS ── */}
             <p className="section-label">Smart Insights</p>
             <div className="insights-card">
               <h3>💡 Insights</h3>
@@ -203,7 +209,6 @@ function Dashboard() {
               )}
             </div>
 
-            {/* ── BUDGET ── */}
             <p className="section-label">Budget</p>
             <div className="budget-card">
               <h3>Monthly Budget</h3>
@@ -235,11 +240,9 @@ function Dashboard() {
               </div>
             </div>
 
-            {/* ── GRID ── */}
             <p className="section-label">Breakdown</p>
             <div className="dashboard-grid">
 
-              {/* PIE CHART */}
               <div className="chart-card">
                 <h3>Expense Distribution</h3>
                 {chartLabels.length > 0 ? (
@@ -254,27 +257,6 @@ function Dashboard() {
                           hoverOffset: 8
                         }]
                       }}
-                      options={{
-                        plugins: {
-                          legend: {
-                            position: 'bottom',
-                            labels: {
-                              color: '#94a3b8',
-                              font: { size: 12, family: 'DM Sans' },
-                              padding: 14,
-                              boxWidth: 10,
-                              boxHeight: 10,
-                              borderRadius: 3
-                            }
-                          },
-                          tooltip: {
-                            callbacks: {
-                              label: (ctx) =>
-                                ` ₹${Number(ctx.raw).toLocaleString('en-IN')} (${((ctx.raw / total) * 100).toFixed(1)}%)`
-                            }
-                          }
-                        }
-                      }}
                     />
                   </div>
                 ) : (
@@ -282,7 +264,6 @@ function Dashboard() {
                 )}
               </div>
 
-              {/* RECENT EXPENSES */}
               <div className="chart-card">
                 <h3>Recent Expenses</h3>
                 {expenses.length === 0 ? (

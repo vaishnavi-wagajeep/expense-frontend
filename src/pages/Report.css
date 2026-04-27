@@ -216,3 +216,10 @@
     font-size: 26px;
   }
 }
+
+.rp-chart-card {
+  height: 320px;        /* ✅ FIX */
+  padding: 16px;
+  position: relative;   /* good practice */
+}
+

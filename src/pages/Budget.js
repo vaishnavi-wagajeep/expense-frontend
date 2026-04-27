@@ -9,22 +9,34 @@ function Budget() {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
+  const date = new Date();
+  const period = `${date.getFullYear()}-${date.getMonth() + 1}`; // ✅ FIXED PERIOD FORMAT
+
+  // ================= FETCH BUDGET =================
   const fetchBudget = async () => {
-    const res = await axios.get(`http://localhost:5000/budget/get-budget/${user.id}`);
-    setBudget(res.data);
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/budget/get-budget/${user.id}/${period}`
+      );
+      setBudget(res.data);
+    } catch (err) {
+      console.error("Fetch budget error:", err);
+    }
   };
 
+  // ================= SET BUDGET =================
   const handleSetBudget = async () => {
-    const date = new Date();
+    try {
+      await axios.post("http://localhost:5000/budget/set-budget", {
+        userId: user.id,
+        amount,
+        period, // ✅ FIXED (NO month/year anymore)
+      });
 
-    await axios.post("http://localhost:5000/budget/set-budget", {
-      userId: user.id,
-      amount,
-      month: date.getMonth() + 1,
-      year: date.getFullYear(),
-    });
-
-    fetchBudget();
+      fetchBudget();
+    } catch (err) {
+      console.error("Set budget error:", err);
+    }
   };
 
   useEffect(() => {
@@ -61,7 +73,7 @@ function Budget() {
               <div
                 className="progress"
                 style={{ width: `${percent}%` }}
-              ></div>
+              />
             </div>
           </>
         )}

@@ -40,6 +40,7 @@ const formatCurrency = (amount) => {
 function Report() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [yearlyData, setYearlyData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]); // ✅ ADDED
   const [year, setYear] = useState(new Date().getFullYear());
 
   const containerRef = useRef();
@@ -48,17 +49,21 @@ function Report() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [m, y] = await Promise.all([
+        const [m, y, c] = await Promise.all([
           axios.get(`http://localhost:5000/report/monthly?year=${year}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
           axios.get(`http://localhost:5000/report/yearly`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          axios.get(`http://localhost:5000/report/category?year=${year}`, { // ✅ ADDED
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
 
         setMonthlyData(m.data || []);
         setYearlyData(y.data || []);
+        setCategoryData(c.data || []); // ✅ ADDED
       } catch (err) {
         console.error(err);
       }
@@ -95,6 +100,16 @@ function Report() {
   const generateInsight = () => {
     if (!monthlyData.length) return "No insights available";
 
+    if (monthlyData.length === 1) {
+      const only = monthlyData[0];
+      return `📊 You have data only for ${new Date(
+        0,
+        only.month - 1
+      ).toLocaleString("default", {
+        month: "long",
+      })}. Add more data to see trends.`;
+    }
+
     const highest = monthlyData.reduce((a, b) =>
       a.total > b.total ? a : b
     );
@@ -102,7 +117,16 @@ function Report() {
       a.total < b.total ? a : b
     );
 
-    return `You spent the most in ${new Date(
+    if (highest.month === lowest.month) {
+      return `📊 All your spending is concentrated in ${new Date(
+        0,
+        highest.month - 1
+      ).toLocaleString("default", {
+        month: "long",
+      })}.`;
+    }
+
+    return `💡 You spent the most in ${new Date(
       0,
       highest.month - 1
     ).toLocaleString("default", {
@@ -110,7 +134,9 @@ function Report() {
     })} (${formatCurrency(highest.total)}) and the least in ${new Date(
       0,
       lowest.month - 1
-    ).toLocaleString("default", { month: "long" })}.`;
+    ).toLocaleString("default", {
+      month: "long",
+    })}.`;
   };
 
   /* ========================= PDF ========================= */
@@ -194,11 +220,34 @@ function Report() {
     ],
   };
 
+  const categoryChart = { // ✅ ADDED
+    labels: categoryData.map((d) => d.Category),
+    datasets: [
+      {
+        data: categoryData.map((d) => d.total),
+        backgroundColor: "#22d3ee",
+        borderRadius: 10,
+      },
+    ],
+  };
+
+  const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+
   /* ========================= UI ========================= */
   return (
     <div className="rp-page">
       <div className="rp-container" ref={containerRef}>
         <h1 className="rp-title">Expense Reports</h1>
+
+        {/* ✅ YEAR DROPDOWN */}
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ marginRight: "10px" }}>Select Year:</label>
+          <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+            {years.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
 
         {/* STATS */}
         <div className="rp-stats">
@@ -233,12 +282,10 @@ function Report() {
           </div>
         </div>
 
-        {/* GROWTH */}
         <div className={`rp-growth ${growth >= 0 ? "up" : "down"}`}>
           {growth >= 0 ? "▲" : "▼"} {Math.abs(growth).toFixed(1)}% vs last year
         </div>
 
-        {/* INSIGHT */}
         <div className="rp-insight">💡 {generateInsight()}</div>
 
         {/* CHARTS */}
@@ -250,9 +297,14 @@ function Report() {
           <div className="rp-chart-card">
             <Bar data={yearlyChart} options={chartOptions} />
           </div>
+
+          {/* ✅ CATEGORY CHART */}
+          <div className="rp-chart-card">
+            <h3>Category Breakdown</h3>
+            <Bar data={categoryChart} options={chartOptions} />
+          </div>
         </div>
 
-        {/* BUTTON */}
         <button className="rp-btn" onClick={downloadPDF}>
           Export PDF
         </button>
@@ -260,5 +312,7 @@ function Report() {
     </div>
   );
 }
+
+
 
 export default Report;
